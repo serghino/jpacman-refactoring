@@ -84,6 +84,14 @@ public class Player extends Unit {
     }
 
     /**
+     * Try to kill the player.
+     */
+    public void gotKilled() {
+        this.alive = false;
+        deathSprite.restart();
+    }
+
+    /**
      * Returns the unit that caused the death of Pac-Man.
      *
      * @return <code>Unit</code> iff the player died by collision, otherwise <code>null</code>.
