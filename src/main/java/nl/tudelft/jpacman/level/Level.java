@@ -260,13 +260,12 @@ public class Level {
             stopNPCs();
             inProgress = false;
             if (!isAnyPlayerAlive()) {
+                // Try to revive players with remaining lives
                 for (Player player : players) {
                     if (player.getLives() > 0) {
                         player.setAlive(true);
+                        setSpecialUnitsToInitialSquares();
                     }
-                }
-                if (isAnyPlayerAlive()) {
-                    setSpecialUnitsToInitialSquares();
                 }
             }
         }
