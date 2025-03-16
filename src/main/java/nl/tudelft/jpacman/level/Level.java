@@ -25,13 +25,7 @@ public class Level {
     /**
      * Special units initial squares.
      */
-    List<UnitInitialSquare> unitInitialSquares = new ArrayList<>();
-
-    /**
-     * List of special units (ghosts and player) classes names
-     */
-    private static final List<Class> SPECIAL_UNITS =
-        Arrays.asList(new Class[] { Blinky.class, Clyde.class, Inky.class, Pinky.class, Player.class });
+    private final Map<Unit, Square> unitInitialSquares = new HashMap<>();
 
     /**
      * The board of this level.
@@ -110,6 +104,9 @@ public class Level {
         for (Ghost ghost : ghosts) {
             npcs.put(ghost, null);
         }
+        for (final Ghost npc : npcs.keySet()) {
+            unitInitialSquares.put(npc, npc.getSquare());
+        }
         this.startSquares = startPositions;
         this.startSquareIndex = 0;
         this.players = new ArrayList<>();
@@ -157,7 +154,7 @@ public class Level {
         player.occupy(square);
         startSquareIndex++;
         startSquareIndex %= startSquares.size();
-        getSpecialUnitsInitialSquares();
+        unitInitialSquares.put(player, player.getSquare());
     }
 
     /**
@@ -204,30 +201,14 @@ public class Level {
     }
 
     /**
-     * Store the special units (ghosts and player) initial positions.
-     */
-    public void getSpecialUnitsInitialSquares() {
-        for (int x = 0; x < board.getWidth(); x++) {
-            for (int y = 0; y < board.getHeight(); y++) {
-                Square square = board.squareAt(x, y);
-                if (!square.getOccupants().isEmpty()) {
-                    for (Unit occupant : square.getOccupants()) {
-                        if (SPECIAL_UNITS.contains(occupant.getClass())) {
-                            unitInitialSquares.add(new UnitInitialSquare(occupant, square, x, y));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Set the special units (ghosts and player) to their initial positions.
      */
     public void setSpecialUnitsToInitialSquares() {
-        for (UnitInitialSquare unitInitialSquare : unitInitialSquares) {
-            unitInitialSquare.unit.setDirection(Direction.EAST);
-            unitInitialSquare.unit.occupy(unitInitialSquare.square);
+        for (Map.Entry<Unit, Square> entry : unitInitialSquares.entrySet()) {
+            Unit unit = entry.getKey();
+            Square square = entry.getValue();
+            unit.setDirection(Direction.EAST);
+            unit.occupy(square);
         }
     }
 
@@ -419,20 +400,5 @@ public class Level {
          * this event is received.
          */
         void levelLost();
-    }
-
-    private class UnitInitialSquare {
-
-        Unit unit;
-        Square square;
-        int x;
-        int y;
-
-        private UnitInitialSquare(Unit unit, Square square, int x, int y) {
-            this.unit = unit;
-            this.square = square;
-            this.x = x;
-            this.y = y;
-        };
     }
 }
