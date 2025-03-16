@@ -69,19 +69,26 @@ public class Player extends Unit {
     }
 
     /**
+     * Set the alive variable value.
+     * @param isAlive: a boolean containing the new is alive state.
+     */
+    public void setAlive(boolean isAlive) {
+        alive = isAlive;
+    }
+
+    /**
      * Try to kill the player.
      */
     public void gotKilled() {
         loseLife();
         if (lives == 0) {
             deathSprite.restart();
-            this.alive = false;
         }
         else{
             deathSprite.setAnimating(false);
             this.killer = null;
-            this.alive = true;
         }
+        this.alive = false;
     }
 
     /**

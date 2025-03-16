@@ -1,21 +1,17 @@
 package nl.tudelft.jpacman.level;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import nl.tudelft.jpacman.board.Board;
-import nl.tudelft.jpacman.board.Direction;
-import nl.tudelft.jpacman.board.Square;
-import nl.tudelft.jpacman.board.Unit;
+import nl.tudelft.jpacman.board.*;
 import nl.tudelft.jpacman.npc.Ghost;
+import nl.tudelft.jpacman.npc.ghost.Blinky;
+import nl.tudelft.jpacman.npc.ghost.Clyde;
+import nl.tudelft.jpacman.npc.ghost.Inky;
+import nl.tudelft.jpacman.npc.ghost.Pinky;
 
 /**
  * A level of Pac-Man. A level consists of the board with the players and the
@@ -25,6 +21,17 @@ import nl.tudelft.jpacman.npc.Ghost;
  */
 @SuppressWarnings("PMD.TooManyMethods")
 public class Level {
+
+    /**
+     * Special units initial squares.
+     */
+    List<UnitInitialSquare> unitInitialSquares = new ArrayList<>();
+
+    /**
+     * List of special units (ghosts and player) classes names
+     */
+    private static final List<Class> SPECIAL_UNITS =
+        Arrays.asList(new Class[] { Blinky.class, Clyde.class, Inky.class, Pinky.class, Player.class });
 
     /**
      * The board of this level.
@@ -97,6 +104,7 @@ public class Level {
         assert startPositions != null;
 
         this.board = board;
+
         this.inProgress = false;
         this.npcs = new HashMap<>();
         for (Ghost ghost : ghosts) {
@@ -149,6 +157,7 @@ public class Level {
         player.occupy(square);
         startSquareIndex++;
         startSquareIndex %= startSquares.size();
+        getSpecialUnitsInitialSquares();
     }
 
     /**
@@ -195,6 +204,34 @@ public class Level {
     }
 
     /**
+     * Store the special units (ghosts and player) initial positions.
+     */
+    public void getSpecialUnitsInitialSquares() {
+        for (int x = 0; x < board.getWidth(); x++) {
+            for (int y = 0; y < board.getHeight(); y++) {
+                Square square = board.squareAt(x, y);
+                if (!square.getOccupants().isEmpty()) {
+                    for (Unit occupant : square.getOccupants()) {
+                        if (SPECIAL_UNITS.contains(occupant.getClass())) {
+                            unitInitialSquares.add(new UnitInitialSquare(occupant, square, x, y));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the special units (ghosts and player) to their initial positions.
+     */
+    public void setSpecialUnitsToInitialSquares() {
+        for (UnitInitialSquare unitInitialSquare : unitInitialSquares) {
+            unitInitialSquare.unit.setDirection(Direction.EAST);
+            unitInitialSquare.unit.occupy(unitInitialSquare.square);
+        }
+    }
+
+    /**
      * Starts or resumes this level, allowing movement and (re)starting the
      * NPCs.
      */
@@ -212,6 +249,8 @@ public class Level {
     /**
      * Stops or pauses this level, no longer allowing any movement on the board
      * and stopping all NPCs.
+     * Restore the special units to their initial positions if the players have
+     * remaining lives.
      */
     public void stop() {
         synchronized (startStopLock) {
@@ -220,6 +259,14 @@ public class Level {
             }
             stopNPCs();
             inProgress = false;
+            for (Player player : players) {
+                if (player.getLives() != 0) {
+                    player.setAlive(true);
+                }
+            }
+            if (isAnyPlayerAlive()) {
+                setSpecialUnitsToInitialSquares();
+            }
         }
     }
 
@@ -371,5 +418,20 @@ public class Level {
          * this event is received.
          */
         void levelLost();
+    }
+
+    private class UnitInitialSquare {
+
+        Unit unit;
+        Square square;
+        int x;
+        int y;
+
+        private UnitInitialSquare(Unit unit, Square square, int x, int y) {
+            this.unit = unit;
+            this.square = square;
+            this.x = x;
+            this.y = y;
+        };
     }
 }

@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import nl.tudelft.jpacman.game.Game;
+import nl.tudelft.jpacman.level.Level;
 import nl.tudelft.jpacman.ui.ScorePanel.ScoreFormatter;
 
 /**
