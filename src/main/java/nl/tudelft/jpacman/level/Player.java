@@ -47,11 +47,15 @@ public class Player extends Unit {
      * @param deathAnimation
      *            The sprite to be shown when this player dies.
      */
-    protected Player(Map<Direction, Sprite> spriteMap, AnimatedSprite deathAnimation) {
+    private int lives;
+
+
+    protected Player(Map<Direction, Sprite> spriteMap, AnimatedSprite deathAnimation, int lives) {
         this.score = 0;
         this.alive = true;
         this.sprites = spriteMap;
         this.deathSprite = deathAnimation;
+        this.lives = lives;
         deathSprite.setAnimating(false);
     }
 
@@ -65,22 +69,26 @@ public class Player extends Unit {
     }
 
     /**
-     * Sets whether this player is alive or not.
-     *
-     * If the player comes back alive, the {@link killer} will be reset.
-     *
-     * @param isAlive
-     *            <code>true</code> iff this player is alive.
+     * Set the alive variable value.
+     * @param isAlive: a boolean containing the new is alive state.
      */
     public void setAlive(boolean isAlive) {
-        if (isAlive) {
+        alive = isAlive;
+    }
+
+    /**
+     * Try to kill the player.
+     */
+    public void gotKilled() {
+        loseLife();
+        if (lives == 0) {
+            deathSprite.restart();
+        }
+        else{
             deathSprite.setAnimating(false);
             this.killer = null;
         }
-        if (!isAlive) {
-            deathSprite.restart();
-        }
-        this.alive = isAlive;
+        this.alive = false;
     }
 
     /**
@@ -127,5 +135,21 @@ public class Player extends Unit {
      */
     public void addPoints(int points) {
         score += points;
+    }
+
+    /**
+     * Returns the number of extra lives this player has.
+     *
+     * @return The number of extra lives.
+     */
+    public int getLives() {
+        return lives;
+    }
+
+    /**
+     * Decreases the number of extra lives this player has.
+     */
+    public void loseLife() {
+        lives--;
     }
 }

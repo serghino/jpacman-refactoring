@@ -15,6 +15,11 @@ public class PlayerFactory {
     private final PacManSprites sprites;
 
     /**
+     * The number of extra lives the player will start with.
+     */
+    private static final int STARTING_LIVES = 3;
+
+    /**
      * Creates a new player factory.
      *
      * @param spriteStore
@@ -30,7 +35,7 @@ public class PlayerFactory {
      * @return A new player.
      */
     public Player createPacMan() {
-        return new Player(getSprites().getPacmanSprites(), getSprites().getPacManDeathAnimation());
+        return new Player(getSprites().getPacmanSprites(), getSprites().getPacManDeathAnimation(), STARTING_LIVES);
     }
 
     /**

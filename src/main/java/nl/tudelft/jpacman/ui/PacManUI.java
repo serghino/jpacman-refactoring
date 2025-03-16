@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import nl.tudelft.jpacman.game.Game;
+import nl.tudelft.jpacman.level.Level;
 import nl.tudelft.jpacman.ui.ScorePanel.ScoreFormatter;
 
 /**
@@ -52,6 +53,11 @@ public class PacManUI extends JFrame {
     private final BoardPanel boardPanel;
 
     /**
+     * The panel displaying the player lives.
+     */
+    private final LivesPanel livesPanel;
+
+    /**
      * Creates a new UI for a JPacman game.
      *
      * @param game
@@ -86,12 +92,19 @@ public class PacManUI extends JFrame {
         }
 
         boardPanel = new BoardPanel(game);
+        livesPanel = new LivesPanel(game.getPlayers());
 
         Container contentPanel = getContentPane();
         contentPanel.setLayout(new BorderLayout());
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-        contentPanel.add(scorePanel, BorderLayout.NORTH);
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(scorePanel, BorderLayout.NORTH);
+        topPanel.add(livesPanel, BorderLayout.SOUTH);
+
+        contentPanel.add(topPanel, BorderLayout.NORTH);
         contentPanel.add(boardPanel, BorderLayout.CENTER);
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
     }
@@ -112,5 +125,6 @@ public class PacManUI extends JFrame {
     private void nextFrame() {
         boardPanel.repaint();
         scorePanel.refresh();
+        livesPanel.refresh();
     }
 }
