@@ -313,10 +313,25 @@ public class Level {
      */
     private void updateObservers() {
         if (!isAnyPlayerAlive()) {
-            for (LevelObserver observer : observers) {
-                observer.levelLost();
+            boolean hasMoreLives = false;
+            for (Player player : players) {
+                if (player.getLives() > 1) { // Check if player has more than 1 life
+                    hasMoreLives = true;
+                    player.loseLife(); // Assume this method exists to decrement lives
+                    for (LevelObserver observer : observers) {
+                        observer.playerLostLife();
+                    }
+                    break;
+                }
+            }
+
+            if (!hasMoreLives) {
+                for (LevelObserver observer : observers) {
+                    observer.levelLost();
+                }
             }
         }
+
         if (remainingPellets() == 0) {
             for (LevelObserver observer : observers) {
                 observer.levelWon();
@@ -334,6 +349,18 @@ public class Level {
     public boolean isAnyPlayerAlive() {
         for (Player player : players) {
             if (player.isAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Count remaining lives of all players.
+     */
+    public boolean countRemainingLives() {
+        for (Player player : players) {
+            if (player.getLives() > 0) {
                 return true;
             }
         }
@@ -419,7 +446,11 @@ public class Level {
          * The level has been lost. Typically the level should be stopped when
          * this event is received.
          */
-        void levelLost();
+        default void levelLost() {}
+        /**
+         * Called when a player loses a life but has more remaining.
+         */
+        default void playerLostLife() { }
     }
 
     private class UnitInitialSquare {

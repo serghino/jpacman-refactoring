@@ -116,4 +116,23 @@ public abstract class Game implements LevelObserver {
     public void levelLost() {
         stop();
     }
+
+    @Override
+    public void playerLostLife() {
+
+        if (getLevel().countRemainingLives()) {
+            System.out.println("You lost a life");
+
+            try {
+                // Brief pause to show the player died
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // Restart the game but keep pellets intact
+            start();
+        }
+        // If no lives remain, the game stays stopped
+    }
 }
