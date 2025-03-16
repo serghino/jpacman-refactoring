@@ -259,13 +259,15 @@ public class Level {
             }
             stopNPCs();
             inProgress = false;
-            for (Player player : players) {
-                if (player.getLives() != 0) {
-                    player.setAlive(true);
+            if (!isAnyPlayerAlive()) {
+                for (Player player : players) {
+                    if (player.getLives() > 0) {
+                        player.setAlive(true);
+                    }
                 }
-            }
-            if (isAnyPlayerAlive()) {
-                setSpecialUnitsToInitialSquares();
+                if (isAnyPlayerAlive()) {
+                    setSpecialUnitsToInitialSquares();
+                }
             }
         }
     }
