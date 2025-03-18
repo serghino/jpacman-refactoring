@@ -2,6 +2,7 @@ package nl.tudelft.jpacman.level;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -244,8 +245,10 @@ public class Level {
                 // Try to revive players with remaining lives
                 for (Player player : players) {
                     if (player.getLives() > 0) {
-                        player.setAlive(true);
-                        setSpecialUnitsToInitialSquares();
+                        CompletableFuture.delayedExecutor(3, TimeUnit.SECONDS).execute(() -> {
+                            player.revive();
+                            setSpecialUnitsToInitialSquares();
+                        });
                     }
                 }
             }

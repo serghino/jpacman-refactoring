@@ -77,18 +77,21 @@ public class Player extends Unit {
     }
 
     /**
-     * Try to kill the player.
+     * Kill the player.
      */
     public void gotKilled() {
         loseLife();
-        if (lives == 0) {
-            deathSprite.restart();
-        }
-        else{
-            deathSprite.setAnimating(false);
-            this.killer = null;
-        }
-        this.alive = false;
+        deathSprite.restart();
+        alive = false;
+    }
+
+    /**
+     * Revive the player.
+     */
+    public void revive() {
+        deathSprite.setAnimating(false);
+        killer = null;
+        alive = true;
     }
 
     /**
