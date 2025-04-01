@@ -9,10 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import nl.tudelft.jpacman.board.*;
 import nl.tudelft.jpacman.npc.Ghost;
-import nl.tudelft.jpacman.npc.ghost.Blinky;
-import nl.tudelft.jpacman.npc.ghost.Clyde;
-import nl.tudelft.jpacman.npc.ghost.Inky;
-import nl.tudelft.jpacman.npc.ghost.Pinky;
 
 /**
  * A level of Pac-Man. A level consists of the board with the players and the
